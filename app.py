@@ -51,6 +51,14 @@ def download_caption(caption_id, api_key):
 st.title("YouTube Captions Downloader")
 st.write("Enter a YouTube video URL to fetch available caption tracks.")
 
+# Check for API key in secrets
+yt_secrets = st.secrets.get("YT")
+if not yt_secrets or "API_KEY" not in yt_secrets:
+    st.error("Missing API key in secrets! Please define [YT] and API_KEY in your .streamlit/secrets.toml file.")
+    st.stop()
+
+api_key = yt_secrets["API_KEY"]
+
 # Input for YouTube video URL
 video_url = st.text_input("YouTube Video URL:")
 
@@ -58,8 +66,6 @@ if video_url:
     video_id = get_video_id(video_url)
     if video_id:
         st.write("Fetching captions for video ID:", video_id)
-        # Get the API key from Streamlit secrets (adjust key names if needed)
-        api_key = st.secrets["YT"]["API_KEY"]
         captions_data = list_captions(video_id, api_key)
         if captions_data and "items" in captions_data and captions_data["items"]:
             # Create a dictionary to store available caption tracks
